@@ -14,6 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using AutoLotModel;
 using System.Data.Entity;
+using System.Data;
 
 namespace Ples_Claudiu_Lab5
 {
@@ -37,7 +38,7 @@ namespace Ples_Claudiu_Lab5
         CollectionViewSource customerVSource;
 
         AutoLotEntitiesModel itx = new AutoLotEntitiesModel();
-        CollectionViewSource inventoryVsource;
+        CollectionViewSource inventoryVSource;
         public MainWindow()
         {
             InitializeComponent();
@@ -49,6 +50,10 @@ namespace Ples_Claudiu_Lab5
             customerVSource = ((System.Windows.Data.CollectionViewSource)(this.FindResource("customerViewSource")));
             customerVSource.Source = ctx.Customers.Local;
             ctx.Customers.Load();
+
+            inventoryVSource = ((System.Windows.Data.CollectionViewSource)(this.FindResource("inventoryViewSource")));
+            inventoryVSource.Source = itx.Inventories.Local;
+            itx.Inventories.Load();
             System.Windows.Data.CollectionViewSource customerViewSource = ((System.Windows.Data.CollectionViewSource)(this.FindResource("customerViewSource")));
             // Load data by setting the CollectionViewSource.Source property:
             // customerViewSource.Source = [generic data source]
@@ -84,6 +89,50 @@ namespace Ples_Claudiu_Lab5
         {
             inventoryVSource.View.MoveCurrentToPrevious();
         }
+        private void gbOperations_Click(object sender, RoutedEventArgs e)
+        {
+            Button SelectedButton = (Button)e.OriginalSource;
+            Panel panel = (Panel)SelectedButton.Parent;
+
+            foreach (Button B in panel.Children.OfType<Button>())
+            {
+                if (B != SelectedButton)
+                    B.IsEnabled = false;
+            }
+            gbActions.IsEnabled = true;
+        }
+        private void ReInitialize()
+        {
+
+            Panel panel = gbOperations.Content as Panel;
+            foreach (Button B in panel.Children.OfType<Button>())
+            {
+                B.IsEnabled = true;
+            }
+            gbActions.IsEnabled = false;
+        }
+        private void btnCancel_Click(object sender, RoutedEventArgs e)
+        {
+            ReInitialize();
+        }
+        private void btnSave_Click(object sender, RoutedEventArgs e)
+        {
+            TabItem ti = tbCtrlAutoLot.SelectedItem as TabItem;
+
+            switch (ti.Header)
+            {
+                case "Customers":
+                    SaveCustomers();
+                    break;
+                case "Inventory":
+                    SaveInventory();
+                    break;
+                case "Orders":
+                    break;
+            }
+            ReInitialize();
+        }
+
         private void SaveCustomers()
         {
             Customer customer = null;
@@ -154,7 +203,7 @@ namespace Ples_Claudiu_Lab5
                         Make = makeTextBox.Text.Trim()
                     };
                     //adaugam entitatea nou creata in context
-                    itx.Inventory.Add(inventory);
+                    itx.Inventories.Add(inventory);
                     inventoryVSource.View.Refresh();
                     //salvam modificarile
                     itx.SaveChanges();
@@ -186,7 +235,7 @@ namespace Ples_Claudiu_Lab5
                 try
                 {
                     inventory = (Inventory)customerDataGrid.SelectedItem;
-                    itx.Inventory.Remove(inventory);
+                    itx.Inventories.Remove(inventory);
                     itx.SaveChanges();
                 }
                 catch (DataException ex)
