@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31702.278
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ples_Claudiu_Lab5", "Ples_Claudiu_Lab5.csproj", "{DD0B9977-3DFA-4873-B17A-B206C267686E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoLotModel", "..\AutoLotModel\AutoLotModel.csproj", "{CAD8DE12-60F8-4E21-A13F-687587BDE0DA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DD0B9977-3DFA-4873-B17A-B206C267686E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DD0B9977-3DFA-4873-B17A-B206C267686E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DD0B9977-3DFA-4873-B17A-B206C267686E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DD0B9977-3DFA-4873-B17A-B206C267686E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CAD8DE12-60F8-4E21-A13F-687587BDE0DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CAD8DE12-60F8-4E21-A13F-687587BDE0DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CAD8DE12-60F8-4E21-A13F-687587BDE0DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CAD8DE12-60F8-4E21-A13F-687587BDE0DA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {FED24DD7-7A13-4378-AAF1-FBC928FEEBDD}
+	EndGlobalSection
+EndGlobal
