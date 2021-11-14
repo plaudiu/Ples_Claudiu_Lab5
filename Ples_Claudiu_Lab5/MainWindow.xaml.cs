@@ -39,6 +39,7 @@ namespace Ples_Claudiu_Lab5
 
         AutoLotEntitiesModel itx = new AutoLotEntitiesModel();
         CollectionViewSource inventoryVSource;
+        CollectionViewSource ordersVSource;
         public MainWindow()
         {
             InitializeComponent();
@@ -51,13 +52,30 @@ namespace Ples_Claudiu_Lab5
             customerVSource.Source = ctx.Customers.Local;
             ctx.Customers.Load();
 
+            ordersVSource = ((System.Windows.Data.CollectionViewSource)(this.FindResource("ordersViewSource")));
+
+            ordersVSource.Source = ctx.Orders.Local;
+            ctx.Orders.Load();
+            ctx.Inventories.Load();
+            cmbCustomers.ItemsSource = ctx.Customers.Local;
+            //cmbCustomers.DisplayMemberPath = "FirstName";
+            cmbCustomers.SelectedValuePath = "CustId";
+            //ordersVSource.Source = ctx.Orders.Local;
+            cmbInventory.ItemsSource = ctx.Inventories.Local;
+            //cmbInventory.DisplayMemberPath = "Make";
+            cmbInventory.SelectedValuePath = "CarId";
+
             inventoryVSource = ((System.Windows.Data.CollectionViewSource)(this.FindResource("inventoryViewSource")));
             inventoryVSource.Source = itx.Inventories.Local;
             itx.Inventories.Load();
+
+            BindDataGrid();
+
             System.Windows.Data.CollectionViewSource customerViewSource = ((System.Windows.Data.CollectionViewSource)(this.FindResource("customerViewSource")));
             // Load data by setting the CollectionViewSource.Source property:
             // customerViewSource.Source = [generic data source]
             System.Windows.Data.CollectionViewSource inventoryViewSource = ((System.Windows.Data.CollectionViewSource)(this.FindResource("inventoryViewSource")));
+            System.Windows.Data.CollectionViewSource ordersViewSource = ((System.Windows.Data.CollectionViewSource)(this.FindResource("ordersViewSource")));
             // Load data by setting the CollectionViewSource.Source property:
             // inventoryViewSource.Source = [generic data source]
         }
@@ -244,6 +262,113 @@ namespace Ples_Claudiu_Lab5
                 }
                 inventoryVSource.View.Refresh();
             }
+
+        }
+
+        private void SaveOrders()
+        {
+            Order order = null;
+            if (action == ActionState.New)
+            {
+                try
+                {
+                    Customer customer = (Customer)cmbCustomers.SelectedItem;
+                    Inventory inventory = (Inventory)cmbInventory.SelectedItem;
+                    //instantiem Order entity
+                    order = new Order()
+                    {
+
+                        CustId = customer.CustId,
+                        CarId = inventory.CarId
+                    };
+                    //adaugam entitatea nou creata in context
+                    ctx.Orders.Add(order);
+                    //salvam modificarile
+                    ctx.SaveChanges();
+                    BindDataGrid();
+                }
+                catch (DataException ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+            }
+            else
+           if (action == ActionState.Edit)
+            {
+                dynamic selectedOrder = ordersDataGrid.SelectedItem;
+                try
+                {
+                    int curr_id = selectedOrder.OrderId;
+                    var editedOrder = ctx.Orders.FirstOrDefault(s => s.OrderId == curr_id);
+                    if (editedOrder != null)
+                    {
+                        editedOrder.CustId = Int32.Parse(cmbCustomers.SelectedValue.ToString());
+                        editedOrder.CarId = Convert.ToInt32(cmbInventory.SelectedValue.ToString());
+                        //salvam modificarile
+                        ctx.SaveChanges();
+                    }
+                }
+                catch (DataException ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+                BindDataGrid();
+                // pozitionarea pe item-ul curent
+                ordersVSource.View.MoveCurrentTo(selectedOrder);
+            }
+            else if (action == ActionState.Delete)
+            {
+                try
+                {
+                    dynamic selectedOrder = ordersDataGrid.SelectedItem;
+                    int curr_id = selectedOrder.OrderId;
+                    var deletedOrder = ctx.Orders.FirstOrDefault(s => s.OrderId == curr_id);
+                    if (deletedOrder != null)
+                    {
+                        ctx.Orders.Remove(deletedOrder);
+                        ctx.SaveChanges();
+                        MessageBox.Show("Order Deleted Successfully", "Message");
+                        BindDataGrid();
+                    }
+                }
+                catch (DataException ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+            }
+        }
+        private void BindDataGrid()
+        {
+            var queryOrder = from ord in ctx.Orders
+                             join cust in ctx.Customers on ord.CustId equals
+                             cust.CustId
+                             join inv in ctx.Inventories on ord.CarId
+                 equals inv.CarId
+                             select new
+                             {
+                                 ord.OrderId,
+                                 ord.CarId,
+                                 ord.CustId,
+                                 cust.FirstName,
+                                 cust.LastName,
+                                 inv.Make,
+                                 inv.Color
+                             };
+            ordersVSource.Source = queryOrder.ToList();
+        }
+
+        private void tbCtrlAutoLot_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
+
+        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
+
+        private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
 
         }
     }
