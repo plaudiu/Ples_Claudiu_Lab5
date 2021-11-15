@@ -16,6 +16,7 @@ using AutoLotModel;
 using System.Data.Entity;
 using System.Data;
 
+
 namespace Ples_Claudiu_Lab5
 {
     /// <summary>
@@ -83,11 +84,15 @@ namespace Ples_Claudiu_Lab5
         {
             action = ActionState.New;
         }
-        private void btnEditO_Click(object sender, RoutedEventArgs e)
+        private void btnEdit_Click(object sender, RoutedEventArgs e)
         {
             action = ActionState.Edit;
+            BindingOperations.ClearBinding(firstNameTextBox, TextBox.TextProperty);
+            BindingOperations.ClearBinding(lastNameTextBox, TextBox.TextProperty);
+
+            SetValidationBinding();
         }
-        private void btnDeleteO_Click(object sender, RoutedEventArgs e)
+        private void btnDelete_Click(object sender, RoutedEventArgs e)
         {
             action = ActionState.Delete;
         }
@@ -150,6 +155,8 @@ namespace Ples_Claudiu_Lab5
             }
             ReInitialize();
         }
+
+    
 
         private void SaveCustomers()
         {
@@ -265,6 +272,32 @@ namespace Ples_Claudiu_Lab5
 
         }
 
+        private void SetValidationBinding()
+        {
+            Binding firstNameValidationBinding = new Binding();
+            firstNameValidationBinding.Source = customerVSource;
+            firstNameValidationBinding.Path = new PropertyPath("FirstName");
+            firstNameValidationBinding.NotifyOnValidationError = true;
+            firstNameValidationBinding.Mode = BindingMode.TwoWay;
+            firstNameValidationBinding.UpdateSourceTrigger =
+           UpdateSourceTrigger.PropertyChanged;
+            //string required
+            firstNameValidationBinding.ValidationRules.Add(new StringNotEmpty());
+            firstNameTextBox.SetBinding(TextBox.TextProperty,
+           firstNameValidationBinding);
+            Binding lastNameValidationBinding = new Binding();
+            lastNameValidationBinding.Source = customerVSource;
+            lastNameValidationBinding.Path = new PropertyPath("LastName");
+            lastNameValidationBinding.NotifyOnValidationError = true;
+            lastNameValidationBinding.Mode = BindingMode.TwoWay;
+            lastNameValidationBinding.UpdateSourceTrigger =
+           UpdateSourceTrigger.PropertyChanged;
+            //string min length validator
+            lastNameValidationBinding.ValidationRules.Add(new StringMinLengthValidator());
+            lastNameTextBox.SetBinding(TextBox.TextProperty,
+           lastNameValidationBinding); //setare binding nou
+        }
+
         private void SaveOrders()
         {
             Order order = null;
@@ -356,6 +389,8 @@ namespace Ples_Claudiu_Lab5
                              };
             ordersVSource.Source = queryOrder.ToList();
         }
+
+        
 
         private void tbCtrlAutoLot_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
